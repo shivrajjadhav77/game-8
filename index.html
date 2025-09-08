@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tower Builder 🏗️</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      background: linear-gradient(to bottom, #00c6ff, #0072ff);
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 28px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    #gameCanvas {
+      background: #333;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+    }
+
+    #score {
+      margin-top: 12px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    #startBtn {
+      margin-top: 14px;
+      padding: 10px 18px;
+      background: orange;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #startBtn:hover {
+      background: darkorange;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tower Builder 🏗️ ✏️</h1>
+  <canvas id="gameCanvas" width="400" height="500"></canvas>
+  <div id="score">Score: 0</div>
+  <button id="startBtn">▶️ Start Game</button>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const blockHeight = 30;
+    let baseWidth = 200;
+    let speed = 3;
+    let score = 0;
+    let blocks = [];
+    let gameRunning = false;
+    let animId = null;
+
+    const scoreEl = document.getElementById("score");
+    const startBtn = document.getElementById("startBtn");
+
+    // ---------- Background emojis ----------
+    let bgEmojis = [];
+    const emojiList = ["🌟", "✨", "💫", "🔥", "🌈", "⭐", "💎", "🎇", "🎆", "⚡"];
+
+    function spawnBgEmoji() {
+      const emoji = emojiList[Math.floor(Math.random() * emojiList.length)];
+      bgEmojis.push({
+        emoji: emoji,
+        x: Math.random() * canvas.width,
+        y: canvas.height + 20,
+        speed: 0.5 + Math.random() * 1.2,
+        size: 22 + Math.random() * 18
+      });
+    }
+
+    function drawBgEmojis() {
+      ctx.textAlign = "center";
+      bgEmojis.forEach((e, i) => {
+        ctx.font = `${e.size}px Arial`;
+        ctx.fillText(e.emoji, e.x, e.y);
+        e.y -= e.speed;
+        if (e.y < -20) bgEmojis.splice(i, 1);
+      });
+    }
+
+    // ---------- Game ----------
+    function startGame() {
+      cancelAnimationFrame(animId);
+      blocks = [];
+      score = 0;
+      speed = 3;
+      gameRunning = true;
+      scoreEl.innerText = "Score: 0";
+
+      // Base block
+      const baseX = Math.round((canvas.width - baseWidth) / 2);
+      const baseY = canvas.height - blockHeight;
+      blocks.push({ x: baseX, y: baseY, width: baseWidth, moving: false, dx: 0 });
+
+      // First moving block
+      addMovingBlock(baseWidth, baseY - blockHeight);
+
+      animId = requestAnimationFrame(gameLoop);
+    }
+
+    function addMovingBlock(width, y) {
+      blocks.push({ x: 0, y: y, width: width, moving: true, dx: speed });
+    }
+
+    function gameLoop() {
+      if (!gameRunning) return;
+      animId = requestAnimationFrame(gameLoop);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#333";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (Math.random() < 0.03) spawnBgEmoji();
+      drawBgEmojis();
+
+      for (const b of blocks) {
+        ctx.fillStyle = "#ffeb3b";
+        ctx.fillRect(Math.round(b.x), Math.round(b.y), Math.round(b.width), blockHeight);
+        ctx.strokeStyle = "#222";
+        ctx.strokeRect(Math.round(b.x), Math.round(b.y), Math.round(b.width), blockHeight);
+      }
+
+      ctx.fillStyle = "white";
+      ctx.font = "20px Arial";
+      ctx.fillText("Score: " + score, 70, 30);
+
+      const top = blocks[blocks.length - 1];
+      if (top && top.moving) {
+        top.x += top.dx;
+        if (top.x <= 0) { top.x = 0; top.dx = Math.abs(top.dx); }
+        else if (top.x + top.width >= canvas.width) {
+          top.x = canvas.width - top.width;
+          top.dx = -Math.abs(top.dx);
+        }
+      }
+    }
+
+    // ---------- Drop logic ----------
+    function dropBlock() {
+      if (!gameRunning) return;
+
+      const top = blocks[blocks.length - 1];
+      const below = blocks[blocks.length - 2];
+      if (!top || !top.moving || !below) return;
+
+      const leftTop = top.x, rightTop = top.x + top.width;
+      const leftBelow = below.x, rightBelow = below.x + below.width;
+      const overlap = Math.min(rightTop, rightBelow) - Math.max(leftTop, leftBelow);
+
+      if (overlap <= 0) { gameOver(); return; }
+
+      const offset = Math.abs(leftTop - leftBelow);
+      const PERFECT_TOLERANCE = 6;
+      let bonus = 0;
+
+      if (offset <= PERFECT_TOLERANCE) {
+        top.x = below.x;
+        top.width = below.width;
+        bonus = 1;
+        spawnFloatingText("Perfect! ✨", top.x + top.width / 2, top.y);
+      } else {
+        top.width = overlap;
+        top.x = Math.max(leftTop, leftBelow);
+      }
+
+      top.moving = false;
+      top.dx = 0;
+      score += 1 + bonus;
+      scoreEl.innerText = "Score: " + score;
+
+      const newY = top.y - blockHeight;
+      if (newY < 40) {
+        const shift = 40 - newY;
+        for (const b of blocks) b.y += shift;
+      }
+
+      addMovingBlock(top.width, top.y - blockHeight);
+      speed = Math.min(10, speed + 0.12);
+    }
+
+    function gameOver() {
+      setTimeout(() => {
+        const again = confirm(`😭 Game Over! Your score: ${score}\nPlay again?`);
+        if (again) startGame();
+      }, 80);
+    }
+
+    // ---------- Floating text ----------
+    function spawnFloatingText(text, canvasX, canvasY) {
+      const rect = canvas.getBoundingClientRect();
+      const div = document.createElement("div");
+      div.textContent = text;
+      div.style.position = "absolute";
+      div.style.left = `${Math.round(rect.left + canvasX)}px`;
+      div.style.top = `${Math.round(rect.top + canvasY)}px`;
+      div.style.transform = "translate(-50%, -120%)";
+      div.style.padding = "6px 10px";
+      div.style.background = "rgba(0,0,0,0.7)";
+      div.style.color = "#fff";
+      div.style.borderRadius = "8px";
+      div.style.fontWeight = "700";
+      div.style.pointerEvents = "none";
+      div.style.zIndex = 9999;
+      document.body.appendChild(div);
+      setTimeout(() => {
+        div.style.transition = "opacity .6s, transform .6s";
+        div.style.opacity = "0";
+        div.style.transform = "translate(-50%, -160%)";
+      }, 700);
+      setTimeout(() => div.remove(), 1400);
+    }
+
+    // ---------- Controls ----------
+    document.body.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        dropBlock();
+      }
+    });
+
+    canvas.addEventListener("click", () => dropBlock());
+    startBtn.addEventListener("click", () => startGame());
+  </script>
+</body>
+</html>

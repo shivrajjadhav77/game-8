@@ -1,0 +1,96 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(180deg, #4facfe, #00f2fe);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #fff;
+  text-align: center;
+}
+
+.game-container {
+  width: 400px;
+}
+
+canvas {
+  background: #333;
+  display: block;
+  margin: 10px auto;
+  border-radius: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: #ff9800;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #fff;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #e68900;
+}
+
+.hint {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(180deg, #4facfe, #00f2fe);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* stack from top instead of middle */
+  height: 100vh;
+  color: #fff;
+  text-align: center;
+  padding-top: 20px; /* push content down */
+}
+
+.game-container {
+  width: 420px;
+}
+
+h1 {
+  margin: 10px 0 20px 0;
+  font-size: 2rem;
+  color: #fff;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6); /* glow effect */
+  font-weight: bold;
+}
+
+canvas {
+  background: #333;
+  display: block;
+  margin: 0 auto 10px auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: #ff9800;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #fff;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #e68900;
+}
+
+.hint {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
