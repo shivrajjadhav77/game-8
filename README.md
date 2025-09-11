@@ -8,11 +8,8 @@ Time your moves perfectly, earn bonus points, and challenge yourself to reach ne
 🎮 Gameplay
 
 🏃 Blocks Move: A block slides left and right on the screen.
-
 👆 Tap / Click: Drop the block onto the tower.
-
 🎯 Perfect Drop: Line it up exactly for bonus points & extra stability!
-
 📏 Goal: Build as high as you can before your tower collapses!
 
 ✨ Features
@@ -25,7 +22,7 @@ Time your moves perfectly, earn bonus points, and challenge yourself to reach ne
 🏆 Scoring
 
 🎯 Perfect Drop: +Bonus points & extra block size
-
 📉 Missed Drop: Tower gets narrower, harder to balance
+💥 Fall: Game over – see how high you got!
 
-💥 Fall: Game over – see how high you got
+✅ Tip: Make sure your README file is saved in UTF-8 encoding — most code editors (VS Code, Sublime, GitHub) do this by default.
