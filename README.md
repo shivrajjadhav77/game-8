@@ -2,8 +2,7 @@ Tower Builder
 
 Stack. Build. Don’t Fall.
 
-Welcome to Tower Builder, the super addictive game where you stack moving blocks to build the tallest tower possible.
-Time your moves perfectly, earn bonus points, and challenge yourself to reach new heights!
+Welcome to Tower Builder, the super addictive game where you stack moving blocks to build the tallest tower possible. Time your moves perfectly, earn bonus points, and challenge yourself to reach new heights!
 
 Gameplay
 
